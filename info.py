@@ -13,12 +13,7 @@ def is_enabled(value, default):
         return default
 
 #main variables
-API_ID = int(environ.get('API_ID', '20870885'))
-   api_id_value = environ.get('API_ID')
-   if api_id_value is None or api_id_value == '20870885':
-       raise ValueError("API_ID environment variable must be set.")
-   API_ID = int(api_id_value)
-   
+API_ID = int(environ.get('API_ID', '20870885'))  
 API_HASH = environ.get('API_HASH', 'a7e1280d30225e7aa036d57a0c9bb929')
 BOT_TOKEN = environ.get('BOT_TOKEN', '')
 
