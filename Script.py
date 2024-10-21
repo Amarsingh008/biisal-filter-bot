@@ -107,7 +107,12 @@ User - {}"""
 ❗️ ʟᴀɴɢᴜᴀɢᴇ - {languages}</b>
 """
 
-    FILE_CAPTION = """<a href='https://t.me/Raja1234321'><b>ɴᴀᴍᴇ : {file_name}</b></a>"""
+    FILE_CAPTION = """<b>📂Fɪʟᴇɴᴀᴍᴇ : {file_name}</b>
+
+<b> Size ⚙️: {file_size}
+○Jᴏɪɴ :<a href="https://t.me/Vishwambharamovie">Cʜᴀɴɴᴇʟ</a>
+○Mᴏᴠɪᴇ :<a href="https://t.me/movierequest_latest">Gʀᴏᴜᴘ</a>
+</b>""" 
 
     RESTART_TXT = """<b>
 📅 Dᴀᴛᴇ : <code>{}</code>
