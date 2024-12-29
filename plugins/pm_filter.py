@@ -58,7 +58,7 @@ async def pm_text(client, message):
     if not (data and data.get("expiry_time")):
         await message.reply_text(
             text=f"<b>Hey, {user} you are not a premium user, so you can't search for movies in PM.</b>",
-            reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('Buy Premium', callback_data='premium')], [InlineKeyboardButton('Join Group To Search', url='https://t.me/+Cuh0VD290xBmODY1')]]))
+            reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('Buy Premium', callback_data='buy_pre')], [InlineKeyboardButton('Join Group To Search', url='https://t.me/+Cuh0VD290xBmODY1')]]))
         await client.send_message(
             chat_id=LOG_CHANNEL,
             text=f"<b>#𝐏𝐌_𝐌𝐒𝐆\n\nNᴀᴍᴇ : {user}\n\nID : {user_id}\n\nMᴇssᴀɢᴇ : {message.text}</b>", reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('close 🔒', callback_data='close_data')]])
@@ -930,6 +930,18 @@ async def cb_handler(client: Client, query: CallbackQuery):
              reply_markup=reply_markup,
              parse_mode=enums.ParseMode.HTML
          )
+	    
+    elif query.data == "buy_pre":
+        buttons = [[
+            InlineKeyboardButton('⋞ ʙᴀᴄᴋ', callback_data='start')
+        ]]
+        reply_markup = InlineKeyboardMarkup(buttons)  
+        await query.message.edit_text(
+            text=script. BUY_PRE,
+            reply_markup=reply_markup,
+            parse_mode=enums.ParseMode.HTML
+	)
+
     elif query.data == "telegraph":
         buttons = [[
             InlineKeyboardButton('⋞ ʙᴀᴄᴋ', callback_data='features')
@@ -951,7 +963,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
             parse_mode=enums.ParseMode.HTML
 	)
   
-
     elif query.data == "all_files_delete":
         files = await Media.count_documents()
         await query.answer('Deleting...')
