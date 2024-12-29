@@ -45,7 +45,7 @@ CAP = {}
 #         )
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
-async def pm_text(client, message):
+async def pm_search(client, message):
     content = message.text.strip()
  
     if content.startswith("/") or content.startswith("#"):
