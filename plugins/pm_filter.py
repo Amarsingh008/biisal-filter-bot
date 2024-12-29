@@ -65,9 +65,8 @@ async def pm_search(client, message):
         )
         return
 
-    #await message.react(emoji=random.choice(REACTIONS))
-
-    manual = await manual_filters(client, message)
+    # #await message.react(emoji=random.choice(REACTIONS))
+    # manual = await manual_filters(client, message)
     if not manual:
         settings = await get_settings(message.chat.id)
         try:
