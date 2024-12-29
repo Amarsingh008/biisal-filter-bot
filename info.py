@@ -102,3 +102,5 @@ DEFAULT_POST_MODE = {
     'singel_post_mode' : False,
     'all_files_post_mode' : False
 }
+#start_command_reactions
+REACTIONS = ["🤝", "🤗", "😍", "😈", "⚡️", "🔥", "👀", "🌚", "🆒", "👻"] #don't add any emoji because tg not support all emoji reactions
