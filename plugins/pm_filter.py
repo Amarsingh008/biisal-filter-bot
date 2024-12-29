@@ -21,28 +21,66 @@ BUTTONS = {}
 FILES_ID = {}
 CAP = {}
 
+# @Client.on_message(filters.private & filters.text & filters.incoming)
+# async def pm_search(client, message):
+#     if str(message.text).startswith('/'):
+#         return 
+#     link , ispm = await db.get_set_grp_links(index=0)
+#     if ispm:
+#         if 'hindi' in message.text.lower() or 'tamil' in message.text.lower() or 'telugu' in message.text.lower() or 'malayalam' in message.text.lower() or 'kannada' in message.text.lower() or 'english' in message.text.lower() or 'gujarati' in message.text.lower(): 
+#             return await auto_filter(client, message , pm_mode=True)
+#         await auto_filter(client, message , pm_mode=True)
+#     else:
+#         await message.reply_text(
+#         text=f"<b>Nᴀᴍᴀsᴛʜᴇ {message.from_user.mention} Jɪ 😍 ,\n\nɪ ᴀᴍ ɴᴏᴛ ᴡᴏʀᴋɪɴɢ ʜᴇʀᴇ. ꜱᴇᴀʀᴄʜ ᴍᴏᴠɪᴇꜱ ɪɴ ᴏᴜʀ ᴍᴏᴠɪᴇ ꜱᴇᴀʀᴄʜ ɢʀᴏᴜᴘ.</b>",
+#         reply_markup=InlineKeyboardMarkup(
+#             [
+#                 [
+#                     InlineKeyboardButton(
+#                         "📝 ᴍᴏᴠɪᴇ ꜱᴇᴀʀᴄʜ ɢʀᴏᴜᴘ✨", url='https://t.me/+Cuh0VD290xBmODY1'
+#                     )
+#                 ]
+#             ]
+#         ),
+#         )
+
 @Client.on_message(filters.private & filters.text & filters.incoming)
-async def pm_search(client, message):
-    if str(message.text).startswith('/'):
-        return 
-    link , ispm = await db.get_set_grp_links(index=0)
-    if ispm:
-        if 'hindi' in message.text.lower() or 'tamil' in message.text.lower() or 'telugu' in message.text.lower() or 'malayalam' in message.text.lower() or 'kannada' in message.text.lower() or 'english' in message.text.lower() or 'gujarati' in message.text.lower(): 
-            return await auto_filter(client, message , pm_mode=True)
-        await auto_filter(client, message , pm_mode=True)
-    else:
+async def pm_text(client, message):
+    content = message.text.strip()
+ 
+    if content.startswith("/") or content.startswith("#"):
+        return
+
+    user = message.from_user.first_name
+    user_id = message.from_user.id
+    data = await db.get_user(user_id)
+    
+    if not (data and data.get("expiry_time")):
         await message.reply_text(
-        text=f"<b>Nᴀᴍᴀsᴛʜᴇ {message.from_user.mention} Jɪ 😍 ,\n\nɪ ᴀᴍ ɴᴏᴛ ᴡᴏʀᴋɪɴɢ ʜᴇʀᴇ. ꜱᴇᴀʀᴄʜ ᴍᴏᴠɪᴇꜱ ɪɴ ᴏᴜʀ ᴍᴏᴠɪᴇ ꜱᴇᴀʀᴄʜ ɢʀᴏᴜᴘ.</b>",
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "📝 ᴍᴏᴠɪᴇ ꜱᴇᴀʀᴄʜ ɢʀᴏᴜᴘ✨", url='https://t.me/+Cuh0VD290xBmODY1'
-                    )
-                ]
-            ]
-        ),
+            text=f"<b>Hey, {user} you are not a premium user, so you can't search for movies in PM.</b>",
+            reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('Buy Premium', callback_data='seeplans')], [InlineKeyboardButton('Join Group To Search', url='https://t.me/+Cuh0VD290xBmODY1')]]))
+        await client.send_message(
+            chat_id=LOG_CHANNEL,
+            text=f"<b>#𝐏𝐌_𝐌𝐒𝐆\n\nNᴀᴍᴇ : {user}\n\nID : {user_id}\n\nMᴇssᴀɢᴇ : {message.text}</b>", reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('close 🔒', callback_data='close_data')]])
         )
+        return
+
+    await message.react(emoji=random.choice(REACTIONS))
+
+    manual = await manual_filters(client, message)
+    if not manual:
+        settings = await get_settings(message.chat.id)
+        try:
+            if settings['auto_ffilter']:
+                await auto_filter(client, message)
+        except KeyError:
+            grpid = await active_connection(str(message.from_user.id))
+            await save_group_settings(grpid, 'auto_ffilter', True)
+            settings = await get_settings(message.chat.id)
+            if settings['auto_ffilter']:
+                await auto_filter(client, message)
+
+
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def group_search(client, message):
     user_id = message.from_user.id if message.from_user else None
