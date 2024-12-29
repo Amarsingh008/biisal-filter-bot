@@ -43,6 +43,44 @@ async def pm_search(client, message):
             ]
         ),
         )
+
+@Client.on_message(filters.private & filters.text & filters.incoming)
+async def pm_text(client, message):
+    content = message.text.strip()
+ 
+    if content.startswith("/") or content.startswith("#"):
+        return
+
+    user = message.from_user.first_name
+    user_id = message.from_user.id
+    data = await db.get_user(user_id)
+    
+    if not (data and data.get("expiry_time")):
+        await message.reply_text(
+            text=f"<b>Hey, {user} you are not a premium user, so you can't search for movies in PM.</b>",
+            reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('Buy Premium', callback_data='seeplans')], [InlineKeyboardButton('📝 ᴍᴏᴠɪᴇ ꜱᴇᴀʀᴄʜ ɢʀᴏᴜᴘ✨', url='https://t.me/+Cuh0VD290xBmODY1')]]))
+        await client.send_message(
+            chat_id=LOG_CHANNEL,
+            text=f"<b>#𝐏𝐌_𝐌𝐒𝐆\n\nNᴀᴍᴇ : {user}\n\nID : {user_id}\n\nMᴇssᴀɢᴇ : {message.text}</b>", reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('close 🔒', callback_data='close_data')]])
+        )
+        return
+
+    await message.react(emoji=random.choice(REACTIONS))
+
+    manual = await manual_filters(client, message)
+    if not manual:
+        settings = await get_settings(message.chat.id)
+        try:
+            if settings['auto_ffilter']:
+                await auto_filter(client, message)
+        except KeyError:
+            grpid = await active_connection(str(message.from_user.id))
+            await save_group_settings(grpid, 'auto_ffilter', True)
+            settings = await get_settings(message.chat.id)
+            if settings['auto_ffilter']:
+                await auto_filter(client, message)
+
+
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def group_search(client, message):
     user_id = message.from_user.id if message.from_user else None
@@ -912,8 +950,20 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
 	)
-  
-
+    elif query.data == "seeplans":
+        btn = [[
+            InlineKeyboardButton('📲 ꜱᴇɴᴅ ᴘᴀʏᴍᴇɴᴛ ꜱᴄʀᴇᴇɴꜱʜᴏᴛ', user_id=int(7170452349))
+        ],[
+            InlineKeyboardButton('❌ ᴄʟᴏꜱᴇ ❌', callback_data='close_data')
+        ]]
+        reply_markup = InlineKeyboardMarkup(btn)
+        await query.message.reply_photo(
+            photo="https://envs.sh/o5c.jpg",
+            caption=script.PREPLANS_TXT.format(query.from_user.mention),
+            reply_markup=reply_markup,
+            parse_mode=enums.ParseMode.HTML
+        )
+	    
     elif query.data == "all_files_delete":
         files = await Media.count_documents()
         await query.answer('Deleting...')
