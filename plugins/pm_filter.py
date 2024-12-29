@@ -65,7 +65,7 @@ async def pm_text(client, message):
         )
         return
 
-    await message.react(emoji=random.choice(REACTIONS))
+    #await message.react(emoji=random.choice(REACTIONS))
 
     manual = await manual_filters(client, message)
     if not manual:
